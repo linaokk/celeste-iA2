@@ -1,0 +1,1 @@
+export const CLIENT_ALREADY_EXISTS = 'Client already exists';
