@@ -12,10 +12,10 @@ const getAgentFAQ = async (req, res) => {
 
     const faq = await AgentFAQ.findOne({ agentId });
     if (!faq) {
-      return res.status(404).json({ message: "Aucune FAQ trouvée" });
+      return res.status(400).json({ message: "Aucune FAQ trouvée" });
     }
 
-    res.json({ agentId, faq: faq.faq });
+    res.json({ agentId, faq: faq });
   } catch (err) {
     console.error("❌ Erreur getAgentFAQ:", err);
     res.status(500).json({ message: "Erreur serveur" });

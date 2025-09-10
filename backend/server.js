@@ -6,7 +6,6 @@ const userRoutes = require('./routes/user');
 const rentalRoutes = require('./routes/relantalRoute.js');
 const faqRoutes = require('./routes/faqQuestionRoute.js');
 const historyRoutes = require('./routes/historyRoute.js');
-//const  createTestUser  = require('./controllers/userController.js');
 const app = express();
 
 //const { monthlyFAQBatch } = require("./batches/monthlyReportBatch.js");
@@ -19,7 +18,6 @@ app.use('/api/users', userRoutes);
 app.use('/api/rentals', rentalRoutes);
 app.use('/api/agentReports',historyRoutes );
 app.use('/api/faq', faqRoutes);
-//app.use('/user', createTestUser)
 async function startServer() {
   try {
     await mongoose.connect(
