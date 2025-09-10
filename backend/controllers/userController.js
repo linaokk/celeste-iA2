@@ -14,6 +14,9 @@ const loginUser = async (req, res) => {
         const token = createToken(user._id);
         res.status(200).json({email,token , userRole: user.role, userCompanyName: user.companyName, agentId: user.agentId});
     }catch (error) {
+              if (error.errors) {
+            return res.status(400).json({ errors: error.errors });
+        }
         res.status(400).json({ error: error.message });
     }
 }
@@ -59,6 +62,9 @@ const signupUser = async (req, res) => {
     });
 
   } catch (error) {
+    if (error.errors) {
+      return res.status(400).json({ errors: error.errors });
+    }
     console.error(error);
     res.status(400).json({ error: error.message });
   }
