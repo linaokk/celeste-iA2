@@ -16,7 +16,7 @@ const getAgentReports = async (req, res) => {
       month: r.month,
       pdfData: r.pdfData.toString("base64"), 
       createdAt: r.createdAt,
-    }));
+    }));  
 
     res.json({ agentId, history });
   } catch (err) {

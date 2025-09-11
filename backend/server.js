@@ -2,10 +2,10 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const userRoutes = require('./routes/user');
-const rentalRoutes = require('./routes/relantalRoute.js');
-const faqRoutes = require('./routes/faqQuestionRoute.js');
-const historyRoutes = require('./routes/historyRoute.js');
+const userRoutes = require("./routes/user");
+const rentalRoutes = require("./routes/relantalRoute");
+const faqRoutes = require("./routes/faqQuestionRoute");
+const historyRoutes = require("./routes/historyRoute");
 const app = express();
 
 //const { monthlyFAQBatch } = require("./batches/monthlyReportBatch.js");
@@ -27,7 +27,7 @@ async function startServer() {
     const agentReport = await AgentMonthlyReports.findOne({ agentId: "bc119fc8-b41b-4f90-a2b8-6a63e29edac3" });
     console.log("agentReport", agentReport);
     //await monthlyFAQBatch();
-    // await weeklyFAQBatch();
+    //  await weeklyFAQBatch();
     const PORT = process.env.PORT || 4000;
     app.listen(PORT, () => {
       console.log(`✅ Server running on http://localhost:${PORT}`);

@@ -1,7 +1,11 @@
 const express = require("express");
 const router = express.Router();
 
+// Controller functions
 const { getAgentFAQ } = require("../controllers/faqController");
+const requireAuth = require("../middlware/requireAuth"); // vérifie l'orthographe
 
-router.get("/treeFrequentQuestion", getAgentFAQ);
-module.exports = router; 
+//router.use(requireAuth)
+router.get("/treeFrequentQuestion", requireAuth, getAgentFAQ);
+
+module.exports = router;

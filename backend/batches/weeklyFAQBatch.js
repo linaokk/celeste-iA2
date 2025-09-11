@@ -5,49 +5,70 @@ const { askGemini } = require("../services/geminiService");
 const {getCalls, getCallDetails}= require("../controllers/relantalController");
 const { extractTopNQuestionsFromText, normalizeGeminiResponseToString } = require("../utils/geminiUtils");
 async function getTranscriptsForLastWeek() {
-   const today = new Date(); // samedi
+  const today = new Date();
   const startOfWeek = new Date();
-  startOfWeek.setDate(today.getDate() - 6); // les 7 derniers jours
+  startOfWeek.setDate(today.getDate() - 6);
   startOfWeek.setHours(0, 0, 0, 0);
 
   const endOfWeek = new Date();
   endOfWeek.setHours(23, 59, 59, 999);
-      const calls = await getCalls();
-  const callsThisWeek = calls
-  // .filter(c => {
-  //   const date = new Date(c.timestamp);
+
+  const calls = await getCalls();
+
+  // 1️⃣ Filtrer les appels de la semaine (à décommenter après test)
+  // const callsThisWeek = calls.filter(c => {
+  //   const date = new Date(c.start_time);
   //   return date >= startOfWeek && date <= endOfWeek;
   // });
 
-  // 2️⃣ Récupérer les détails
+  const callsThisWeek = calls; // a commenté apres le test 
+
+  // 2️⃣ Récupérer les détails (transcripts)
   const detailsPromises = callsThisWeek.map(c => getCallDetails(c.id));
   const detailsCalls = await Promise.all(detailsPromises);
 
-  // 3️⃣ Filtrer uniquement ceux avec transcript
+  // 3️⃣ Conserver ceux avec transcript (optionnel)
   const callsWithTranscript = detailsCalls.filter(c => c.transcript && c.transcript.length > 0);
-  console.log("callsWithTranscript", callsWithTranscript)
-  if (callsWithTranscript.length !==0) {
-  const filtered = callsWithTranscript.map(call => ({
-    agentId: call.agent_id,
-    transcripts: call.transcript
-      .filter(msg => msg.role === "user" && msg.content)
-      .map(msg => "user: " + msg.content)
-  })).filter(call => call.transcripts.length > 0);
 
-  // 2️⃣ Regrouper par agentId (similaire à $group + $reduce)
+  // 4️⃣ Regrouper par agent
   const agentsMap = new Map();
-  filtered.forEach(call => {
-    if (!agentsMap.has(call.agentId)) agentsMap.set(call.agentId, []);
-    agentsMap.get(call.agentId).push(...call.transcripts);
+  callsThisWeek.forEach(c => {
+    if (!agentsMap.has(c.agent_id)) {
+      agentsMap.set(c.agent_id, { transcripts: [], audios: [] });
+    }
+      let duration = 0;
+  if (c.start_time && c.end_time) {
+    const start = new Date(c.start_time);
+    const end = new Date(c.end_time);
+    duration = (end - start) / 1000; // durée en secondes
+  }
+    if (c.recording_url) {
+      agentsMap.get(c.agent_id).audios.push({
+        url : c.recording_url, 
+        callDate: new Date(c.start_time), 
+        from_number : c.from_number, 
+        duration : duration, 
+      });
+    }
   });
-  
-  // 3️⃣ Transformer la map en tableau
-  return Array.from(agentsMap.entries()).map(([agentId, transcripts]) => ({
+
+  callsWithTranscript.forEach(call => {
+    const transcripts = call.transcript
+      .filter(msg => msg.role === "user" && msg.content)
+      .map(msg => "user: " + msg.content);
+
+    if (transcripts.length > 0) {
+      agentsMap.get(call.agent_id).transcripts.push(...transcripts);
+    }
+  });
+
+  return Array.from(agentsMap.entries()).map(([agentId, { transcripts, audios }]) => ({
     agentId,
-    transcripts
+    transcripts,
+    audios
   }));
-  }else if (callsWithTranscript.length === 0) return []; 
 }
+
 
 async function weeklyFAQBatch() {
   console.log("🟢 Lancement du batch FAQ hebdomadaire...");
@@ -93,6 +114,7 @@ Consignes :
     await AgentFAQ.create({
       agentId: agent.agentId,
       questions,
+      audios: agent.audios, // 🔥 on stocke aussi les audios
     });
 
     console.log(`✅ FAQ enregistrée pour agent ${agent.agentId}`);

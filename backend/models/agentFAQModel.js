@@ -10,7 +10,14 @@ const agentFAQSchema = new mongoose.Schema({
     ],
     default: []
   ,
-  createdAt: { type: Date, default: Date.now },
+audios: [
+    {
+      url: { type: String, required: true },
+      duration: { type: Number, default: 0 },
+      callDate: { type: Date }, 
+      from_number : {type : String}
+    }
+  ],  createdAt: { type: Date, default: Date.now },
 });
 
 module.exports = mongoose.model("AgentFAQ", agentFAQSchema);
