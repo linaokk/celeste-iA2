@@ -1,0 +1,67 @@
+version: "3.8"
+services:
+  backend-dev:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.backend
+      target: dev
+    volumes:
+      - ./backend:/app
+    ports:
+      - "4000:4000"
+    environment:
+      - NODE_ENV=development
+      - MONGO_URI=mongodb://db:27017/mern-dev
+    depends_on:
+      - db
+
+  frontend-dev:
+    build:
+      context: ./celesteIA-front
+      dockerfile: Dockerfile.frontend
+      target: dev
+    volumes:
+      - ./celesteIA-front:/app
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - REACT_APP_API_URL=http://backend-dev:4000
+    depends_on:
+      - backend-dev
+
+  backend-prod:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.backend
+      target: prod
+    ports:
+      - "8080:4000"
+    environment:
+      - NODE_ENV=production
+      - MONGO_URI=mongodb://db:27017/mern-prod
+    depends_on:
+      - db
+
+  frontend-prod:
+    build:
+      context: ./celesteIA-front
+      dockerfile: Dockerfile.frontend
+      target: prod
+    ports:
+      - "8000:80"
+    environment:
+      - NODE_ENV=production
+      - REACT_APP_API_URL=http://backend-prod:4000
+    depends_on:
+      - backend-prod
+
+  db:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mern_db:/data/db
+
+volumes:
+  mern_db:

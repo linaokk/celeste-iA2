@@ -16,12 +16,11 @@ async function getTranscriptsForLastWeek() {
 
   const calls = await getCalls();
 
-  const callsThisWeek = calls; 
-  // .filter(c => { 
-  //   const date = new Date(c.timestamp);
-  //   return date >= startOfWeek && date <= endOfWeek; 
-  // });
-
+  const callsThisWeek = calls
+  .filter(c => { 
+    const date = new Date(c.timestamp);
+    return date >= startOfWeek && date <= endOfWeek; 
+  });
   // 2️⃣ Récupérer les détails des appels
   const detailsPromises = callsThisWeek.map(c => getCallDetails(c.id));
   const detailsCalls = await Promise.all(detailsPromises);
