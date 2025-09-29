@@ -15,8 +15,10 @@ const userSchema = new Schema(
     password: { type: String, required: true },
     phoneNumber: { type: String, required: true },
     companyName: { type: String, required: true },
-    botId: { type: String, unique: true },
+    botId: { type: String, unique: true , required: false },
     role: { type: String, default: "user" },
+    asklabOrRounded : { type: String, default: "asklab" },
+    agnetId: { type: String, unique: true, required: false },
   },
   { timestamps: true }
 );

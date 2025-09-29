@@ -42,13 +42,14 @@ export const getEventByBot = async (botId) => {
   try {
     botId = "68ca6bb62a86bf0dce309052";
     //const user = await User.findOne({botId});
-    //accedate a ctratedAt for dates filters
+    // TODO:: 
+       // - startDate : date de creation createdAt 
+       // - endDate : date actuelle new Date()
     //if(!user) throw Error("user does not found with this botID"+botId)
-    const events = await asklabClient.post(`${GET_EVENT_BY_BOT}${botId}`, {
-      // startDate: "2025-09-19T00:10",
-      // endDate: "2025-09-20T23:10",
-      startDate: "2025-09-20T00:10",
-      endDate: "2025-09-24T10:00",
+    const calleeId = '68ca6e652a86bf0dce309055';
+    const events = await asklabClient.post(`/events/byCalleeIdAndDateRange/${calleeId}`, {
+      startDate: "2025-09-27T00:10",
+      endDate: "2025-09-29T11:00",
     });
     console.log("events.data", events.data);
     return events.data;
@@ -68,7 +69,7 @@ export const getStatesByBot = async (botId) => {
       `${GET_STATES_BY_BOT_URL}/${botId}/stats`,
       {
         startDate: "2025-09-18T00:10",
-        endDate: "2025-09-24T10:00",
+        endDate: "2025-09-29T11:00",
       }
     );
 
@@ -83,7 +84,7 @@ export const getCallById =()=>{
 }
 export const getUseCaseById = async ()=>{
   try{
-  const response = await asklabClient.get(`/call/${'68ca6bb62a86bf0dce309052'}/recording`)
+  const response = await asklabClient.get(`/call/${'673396c9c4559112349a17e7'}/recording`)
   console.log(response);
     
   }catch(error){
